@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { FollowerBadge } from './components/FollowerBadge';
 import './App.css'
+import { createUseStyles } from 'react-jss';
+import { CamDock } from './components/CamDock';
 
 type ChatEvent = {
   name: string
@@ -15,14 +17,25 @@ type StreamEvent = {
   }
 }
 
-export const App = () => {
+const styles = {
+  root: {
+    width: '100vw',
+    height: '100vh',
+    textAlign: 'center',
+    position: 'relative'
+  }
+}
 
-  const [newFollower, setNewFollower] = useState<string | undefined>(undefined)
+const useStyles = createUseStyles(styles)
+export const App = () => {
+  const styles = useStyles()
+  const [newFollower, setNewFollower] = useState<string | undefined>('Bikappa')
   const handlers = {
     follower: (event: ChatEvent) => {
       setNewFollower(event.name);
     },
   };
+
 
   useEffect(() => {
     const chatEventHandler = (e: any) => {
@@ -53,8 +66,9 @@ export const App = () => {
   }, [newFollower])
 
   return (
-    <>
+    <div className={styles.root}>
+      <CamDock />
       {newFollower ? <FollowerBadge nickname={newFollower} /> : null}
-    </>
+    </div>
   );
 };
