@@ -16,6 +16,7 @@ type StreamEvent = {
     event: ChatEvent
   }
 }
+const FOLLOWER_SHOW_TIME = 5000
 
 const styles = {
   root: {
@@ -27,6 +28,7 @@ const styles = {
 }
 
 const useStyles = createUseStyles(styles)
+
 export const App = () => {
   const styles = useStyles()
   const [newFollower, setNewFollower] = useState<string | undefined>('Bikappa')
@@ -59,7 +61,7 @@ export const App = () => {
     if(!newFollower){
       return
     }
-    const timeout = setTimeout(() => setNewFollower(undefined), 2500)
+    const timeout = setTimeout(() => setNewFollower(undefined), FOLLOWER_SHOW_TIME)
     return () => {
       clearTimeout(timeout)
     }
