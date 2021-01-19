@@ -1,4 +1,4 @@
-const path = require("path") ;
+const path = require("path");
 
 module.exports = {
   entry: path.resolve(__dirname, "./src/index.tsx"),
@@ -13,7 +13,7 @@ module.exports = {
     port: 8080,
   },
   resolve: {
-    extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".css"],
+    extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".css", ".svg"],
   },
   module: {
     rules: [
@@ -28,7 +28,18 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.(png|jp(e*)g|svg|gif)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "images/[hash]-[name].[ext]",
+            },
+          },
+        ],
       },
     ],
   },

@@ -1,76 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { FollowerBadge } from './components/FollowerBadge';
+import React, { useState } from 'react';
 import './App.css'
-import { createUseStyles } from 'react-jss';
-import { CamDock } from './components/CamDock';
+import { Overlay } from './components/Overlay';
 
-type ChatEvent = {
-  name: string
-}
 
-type Listener = 'follower'
+const TokenForm = (props: { onTokenSubmit: (token: string) => void }) => {
 
-type StreamEvent = {
-  detail: {
-    listener: string,
-    event: ChatEvent
+  const [value, setValue] = useState<string>('')
+  const keyDownHandler = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      e.stopPropagation()
+      props.onTokenSubmit(value)
+    }
   }
-}
-const FOLLOWER_SHOW_TIME = 5000
 
-const styles = {
-  root: {
-    width: '100vw',
-    height: '100vh',
-    textAlign: 'center',
-    position: 'relative'
-  }
+  return <input
+    type='password'
+    placeholder='Your streamelements token'
+    value={value}
+    onChange={(e) => setValue(e.target.value)}
+    onKeyDown={keyDownHandler} />
 }
-
-const useStyles = createUseStyles(styles)
 
 export const App = () => {
-  const styles = useStyles()
-  const [newFollower, setNewFollower] = useState<string | undefined>('Bikappa')
-  const handlers = {
-    follower: (event: ChatEvent) => {
-      setNewFollower(event.name);
-    },
-  };
 
+  const [authToken, setAuthToken] = useState<string>()
 
-  useEffect(() => {
-    const chatEventHandler = (e: any) => {
-      const obj = e as StreamEvent
-      if (!obj.detail.event) {
-        return;
-      }
-      const [listener,] = obj.detail.listener.split('-');
-      const event = obj.detail.event;
-
-      handlers[listener as Listener]?.(event);
-    };
-
-    window.addEventListener('onEventReceived', chatEventHandler);
-    return () => {
-      window.removeEventListener('onEventReceived', chatEventHandler);
-    };
-  });
-
-  useEffect(() => {
-    if(!newFollower){
-      return
-    }
-    const timeout = setTimeout(() => setNewFollower(undefined), FOLLOWER_SHOW_TIME)
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [newFollower])
 
   return (
-    <div className={styles.root}>
-      <CamDock />
-      {newFollower ? <FollowerBadge nickname={newFollower} /> : null}
-    </div>
-  );
+    authToken ? <Overlay authToken={authToken}/> : <TokenForm onTokenSubmit={(token) => setAuthToken(token)} />
+  )
 };

@@ -2,6 +2,7 @@ import { FunctionComponent, useEffect, useState } from 'react'
 import { Heart } from 'heroicons-react'
 import { createUseStyles } from 'react-jss'
 import tokens from '../tokens'
+import Shield from '../svgs/shield.svg';
 
 import 'animate.css'
 
@@ -20,31 +21,25 @@ const useStyles = createUseStyles({
     },
     root: {
         position: 'relative',
-        background: `radial-gradient(at bottom center, ${tokens.colorViolet} 29%, ${tokens.colorPurple} 92%)`,
         width: asVw(size),
         height: asVw(size * 1.3),
-        clipPath: 'polygon(0% 0%, 100% 0, 100% 76%, 49% 100%, 0 76%)',
         textAlign: 'center',
         display: 'inline-block',
         transformOrigin: 'center center',
         marginTop: '30vh',
-        boxShadow: '0px 0px 190px 190px rgba(0,0,0,0.75)',
     },
-    innerBorder: {
-        backgroundColor: `${tokens.colorYellowFluoDark}`,
-        width: asVw(size * 0.9),
-        height: asVw(size * 1.2),
-        marginTop: asVw(size * 0.05),
-        clipPath: 'polygon(0% 0%, 100% 0, 100% 76%, 49% 100%, 0 76%)',
-        display: 'inline-block',
-        textAlign: 'center'
+    background: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
     },
     inner: {
-        background: `radial-gradient(at top center, ${tokens.colorViolet} 9%, ${tokens.colorPurple} 72%)`,
+        position: 'relative',
         width: asVw(size * 0.85),
         height: asVw(size * 1.15),
         marginTop: asVw(size * 0.025),
-        clipPath: 'polygon(0% 0%, 100% 0, 100% 76%, 49% 100%, 0 76%)',
         textAlign: 'center',
         color: 'white',
         display: 'inline-block'
@@ -96,14 +91,16 @@ const Flex: FunctionComponent<{ direction?: 'row' | 'column' } & React.HTMLAttri
 }
 
 export type FollowerBadgeProps = {
-    nickname: string
+    nickname: string,
+    duration: number,
 }
 
 enum BadgeAnimation {
     BOUNCING,
     BOUNCINGOUT,
 }
-export function FollowerBadge({ nickname }: FollowerBadgeProps) {
+
+export function FollowerBadge({ nickname, duration }: FollowerBadgeProps) {
 
     const styles = useStyles()
 
@@ -115,7 +112,9 @@ export function FollowerBadge({ nickname }: FollowerBadgeProps) {
     }
 
     useEffect(() => {
-        const t = setTimeout(() => setAnimation(BadgeAnimation.BOUNCINGOUT), 3000)
+        const t = setTimeout(
+            () => setAnimation(BadgeAnimation.BOUNCINGOUT), duration * (1 - FollowerBadge.RELATIVE_OUT_DURATION)
+        )
         return () => {
             clearTimeout(t)
         }
@@ -123,15 +122,17 @@ export function FollowerBadge({ nickname }: FollowerBadgeProps) {
 
     return (
         <div className={`${styles.root} ${animationClass[animation]}`}>
-            <div className={styles.innerBorder}>
-                <div className={styles.inner}>
-                    <Flex className={styles.fullHeight} direction='column'>
-                        <span className={styles.icon}><Heart /></span>
-                        <span className={styles.label}>Nuovo follower</span>
-                        <h2 className={styles.nickname}>{nickname}</h2>
-                    </Flex>
-                </div>
+            <img src={Shield} className={styles.background} alt='badge' />
+            <div className={styles.inner}>
+                <Flex className={styles.fullHeight} direction='column'>
+                    <span className={styles.icon}><Heart /></span>
+                    <span className={styles.label}>Nuovo follower</span>
+                    <h2 className={styles.nickname}>{nickname}</h2>
+                </Flex>
             </div>
         </div>
     )
 }
+
+FollowerBadge.RELATIVE_IN_DURATION = 0.3
+FollowerBadge.RELATIVE_OUT_DURATION = 0.3
