@@ -3,6 +3,7 @@ import { Heart } from 'heroicons-react'
 import { createUseStyles } from 'react-jss'
 import tokens from '../tokens'
 import Shield from '../svgs/shield.svg';
+import useSound from 'use-sound';
 
 import 'animate.css'
 
@@ -96,29 +97,35 @@ export type FollowerBadgeProps = {
 }
 
 enum BadgeAnimation {
-    BOUNCING,
-    BOUNCINGOUT,
+    IN,
+    OUT,
 }
 
 export function FollowerBadge({ nickname, duration }: FollowerBadgeProps) {
 
     const styles = useStyles()
-
-    const [animation, setAnimation] = useState<BadgeAnimation>(BadgeAnimation.BOUNCING)
+    const [play, { stop }] = useSound('./sounds/follower.ogg', { volume: 1 })
+    const [animation, setAnimation] = useState<BadgeAnimation>(BadgeAnimation.IN)
 
     const animationClass = {
-        [BadgeAnimation.BOUNCING]: styles.bounceIn,
-        [BadgeAnimation.BOUNCINGOUT]: styles.bounceOutUp,
+        [BadgeAnimation.IN]: styles.bounceIn,
+        [BadgeAnimation.OUT]: styles.bounceOutUp,
     }
 
     useEffect(() => {
-        const t = setTimeout(
-            () => setAnimation(BadgeAnimation.BOUNCINGOUT), duration * (1 - FollowerBadge.RELATIVE_OUT_DURATION)
+
+        const audioElem = document.getElementById('audio') as HTMLAudioElement
+        audioElem.volume = 0.6
+        audioElem.play()
+
+        const outTimeout = setTimeout(
+            () => setAnimation(BadgeAnimation.OUT), duration * (1 - FollowerBadge.RELATIVE_OUT_DURATION)
         )
         return () => {
-            clearTimeout(t)
+            audioElem.pause()
+            clearTimeout(outTimeout)
         }
-    }, [])
+    })
 
     return (
         <div className={`${styles.root} ${animationClass[animation]}`}>

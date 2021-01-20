@@ -22,12 +22,15 @@ const TokenForm = (props: { onTokenSubmit: (token: string) => void }) => {
     onKeyDown={keyDownHandler} />
 }
 
+function getUserProvidedToken() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const authToken = urlParams.get('authToken');
+  return authToken
+}
+
 export const App = () => {
-
-  const [authToken, setAuthToken] = useState<string>()
-
-
+  const [authToken, setAuthToken] = useState<string | undefined>(getUserProvidedToken() ?? undefined)
   return (
-    authToken ? <Overlay authToken={authToken}/> : <TokenForm onTokenSubmit={(token) => setAuthToken(token)} />
+    authToken ? <Overlay authToken={authToken} /> : <TokenForm onTokenSubmit={(token) => setAuthToken(token)} />
   )
 };

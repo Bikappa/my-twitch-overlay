@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react"
-
+import { useState } from 'react';
 import io from 'socket.io-client';
 
-
 type StreamEvent = any
-
+const WS_URL = 'https://realtime.streamelements.com'
 const useStreamElements = (props: {authToken: string}) => {
 
-
-    const socket = io('https://realtime.streamelements.com', {
+    const [socket] = useState(io(WS_URL, {
         transports: ['websocket']
-    });
+    }))
 
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
